@@ -1,2 +1,2 @@
-# kopgload
-A tool to load a vertical corpus file into a PostgreSQL database
+# kops
+A tool to load and search within a vertical corpus file using PostgreSQL database
