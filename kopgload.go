@@ -8,14 +8,17 @@ import (
 	"kops/db"
 	"log"
 
-	"github.com/tomachalek/vertigo/v2"
+	"github.com/tomachalek/vertigo/v3"
 )
 
 type Conf struct {
-	Host     string `json:"host"`
-	User     string `json:"user"`
-	Password string `json:"password"`
-	DB       string `json:"dbname"`
+	Database struct {
+		Host     string `json:"host"`
+		User     string `json:"user"`
+		Password string `json:"password"`
+		DB       string `json:"dbname"`
+	}
+	VerticalFile string `json:"verticalFile"`
 }
 
 func loadConf(confPath string) *Conf {
@@ -34,21 +37,24 @@ func loadConf(confPath string) *Conf {
 func main() {
 	flag.Parse()
 	conf := loadConf(flag.Arg(0))
-	db := db.ConnectDB(conf.Host, conf.User, conf.Password, conf.DB)
+	db := db.ConnectDB(
+		conf.Database.Host,
+		conf.Database.User,
+		conf.Database.Password,
+		conf.Database.DB,
+	)
 	txn, err := db.Begin()
 	if err != nil {
 		log.Fatal(err)
 	}
 	pc := &vertigo.ParserConf{
-		InputFilePath:         "/home/tomas/work/data/corpora/vertical/vertikala",
+		InputFilePath:         conf.VerticalFile,
 		Encoding:              "utf-8",
 		StructAttrAccumulator: "comb",
 	}
 	loader := dataload.NewLoader(txn)
 	loader.Prepare()
-	for i := 0; i < 20; i++ {
-		err = vertigo.ParseVerticalFile(pc, loader)
-	}
+	err = vertigo.ParseVerticalFile(pc, loader)
 	log.Println("ERROR: ", err)
 	loader.Finish()
 	txn.Commit()

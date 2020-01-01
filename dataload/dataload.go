@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/tomachalek/vertigo/v2"
+	"github.com/tomachalek/vertigo/v3"
 )
 
 type Loader struct {
@@ -45,7 +45,8 @@ func (d *Loader) Finish() {
 	d.insertStmt.Close()
 }
 
-func (d *Loader) ProcToken(token *vertigo.Token, err error) {
+func (d *Loader) ProcToken(token *vertigo.Token, line int, err error) {
+	log.Print("TOKEN: ", token)
 	if err != nil {
 		log.Print("ERROR: ", err)
 		return
@@ -56,10 +57,10 @@ func (d *Loader) ProcToken(token *vertigo.Token, err error) {
 	}
 }
 
-func (d *Loader) ProcStruct(strc *vertigo.Structure, err error) {
+func (d *Loader) ProcStruct(strc *vertigo.Structure, line int, err error) {
 	//strc.Attrs
 }
 
-func (d *Loader) ProcStructClose(strc *vertigo.StructureClose, err error) {
+func (d *Loader) ProcStructClose(strc *vertigo.StructureClose, line int, err error) {
 
 }
